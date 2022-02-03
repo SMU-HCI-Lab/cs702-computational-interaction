@@ -1,3 +1,5 @@
 pulp
 python-constraint
 flask
+Pillow
+opencv-python
