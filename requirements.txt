@@ -3,3 +3,5 @@ python-constraint
 flask
 Pillow
 opencv-python
+torch
+pyro-ppl
