@@ -5,3 +5,5 @@ Pillow
 opencv-python
 torch
 pyro-ppl
+GPy
+gpyopt
