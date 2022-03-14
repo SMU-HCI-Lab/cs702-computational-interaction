@@ -15,8 +15,9 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 @application.route('/')
-def home():
-    return render_template('home.html')
+@application.route('/contextual')
+def contextual():
+    return render_template('contextual_bandit.html')
 
 @application.route('/api/user_response', methods=['POST'])
 def user_response():
