@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bandit example</title>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    #my-image {
+      height: 300px;
+    }
+  </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+</head>
+
+<body>
+  <main>
+      <div>
+        <figure id="image-holder">
+          <img id="my-image" src="/static/pictures/art_and_culture_blue_01.jpg">
+        </figure>
+        <form>
+          <button id="like-button">Like</button>
+          <button id="dislike-button">Dislike</button>
+        </form>
+      </div>
+    <div>
+      <p>Current arm:</p>
+      <pre id="current-arm"></pre>
+      <p>Past responses:</p>
+      <pre id="past-responses">
+
+      </pre>
+    </div>
+
+  </main>
+</body>
+<script>
+  const myImage = document.getElementById('my-image');
+  myImage.src = "/static/pictures/art_and_culture_red_01.jpg"
+  var currentArm = {'color': 'red', 'theme': 'art'}
+  var responses = [];
+
+  const prePastResponses = document.getElementById('past-responses');
+  const preCurrentArm = document.getElementById('current-arm');
+  preCurrentArm.innerHTML = JSON.stringify(currentArm);
+
+
+  function submit(data) {
+    console.log(data);
+    fetch('/api/user_response', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      // console.log(data)
+      responses = data['past_responses'];
+      currentArm = data['arm'];
+      myImage.src = armToSrc(currentArm);
+
+      preCurrentArm.innerHTML = JSON.stringify(currentArm);
+
+      const resTextArray = responses.map(res => JSON.stringify(res));
+      prePastResponses.innerHTML = resTextArray.join('\n');
+    })
+  }
+
+  function onDislikeClick (e) {
+    e.preventDefault();
+    // console.log('Dislike clicked')
+    const response = {'arm': currentArm, 'reward': 0}
+    responses.push(response)
+    const data = {'responses': responses}
+    submit(data);
+  }
+  function onLikeClick (e) {
+    e.preventDefault();
+    // console.log('Like clicked')
+    const response = {'arm': currentArm, 'reward': 1}
+    responses.push(response)
+    const data = {'responses': responses}
+    submit(data);
+  }
+
+  function armToSrc (arm) {
+    const num = getRandomInt(1, 5);
+    let src;
+    if (arm['theme'] == 'art') {
+      src = "/static/pictures/art_and_culture_" + arm['color'] + "_0" + num + ".jpg"
+    } else {
+      src = "/static/pictures/food_and_drink_" + arm['color'] + "_0" + num + ".jpg"
+    }
+    return src;
+  }
+
+  // https://stackoverflow.com/a/1527820/684592
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  const likeButton = document.getElementById('like-button');
+  const dislikeButton = document.getElementById('dislike-button');
+
+  likeButton.onclick = onLikeClick;
+  dislikeButton.onclick = onDislikeClick;
+</script>
+
+</html>
