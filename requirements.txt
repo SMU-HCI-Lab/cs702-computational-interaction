@@ -2,8 +2,6 @@ pulp
 python-constraint
 flask
 Pillow
-opencv-python
-torch
-pyro-ppl
-GPy
-gpyopt
+# opencv-python
+librosa
+
