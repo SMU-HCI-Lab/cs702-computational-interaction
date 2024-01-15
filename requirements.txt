@@ -3,4 +3,5 @@ jupyter
 matplotlib
 numpy
 numpyro
+pyomo
 scipy
