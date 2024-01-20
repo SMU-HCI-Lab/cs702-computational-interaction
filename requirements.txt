@@ -3,5 +3,6 @@ jupyter
 matplotlib
 numpy
 numpyro
+pygame
 pyomo
 scipy
