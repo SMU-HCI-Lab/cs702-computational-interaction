@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 @dataclass
 class PController:
     Kp: float = 0.1
-    bias: float = 0
 
     def calc_input(self, sp: float, pv: float) -> float:
         """Calculate the control signal.
@@ -13,15 +12,14 @@ class PController:
         pv: Process variable
         """
         e = sp - pv
-        return self.Kp * e + self.bias
+        return self.Kp * e
 
 
 @dataclass
 class PIController:
     Kp: float = 0.1
     Ki: float = 0.01
-    bias: float = 0
-    errors: deque = field(default_factory=lambda: deque(maxlen=10))
+    error_accumulator: float = 0
 
     def calc_input(self, sp: float, pv: float) -> float:
         """Calculate the control signal.
@@ -31,11 +29,10 @@ class PIController:
         e = sp - pv
         P = self.Kp * e
 
-        self.errors.append(e)
-        esum = sum(self.errors)
-        I = self.Ki * esum
+        self.error_accumulator += e
+        I = self.Ki * self.error_accumulator
 
-        return self.bias + P + I
+        return P + I
 
 
 @dataclass
@@ -43,8 +40,8 @@ class PIDController:
     Kp: float = 0.1
     Ki: float = 0.01
     Kd: float = 0.1
-    bias: float = 0
-    errors: deque = field(default_factory=lambda: deque(maxlen=10))
+    error_accumulator: float = 0
+    prev_error: float = 0
 
     def calc_input(self, sp: float, pv: float) -> float:
         """Calculate the control signal.
@@ -54,13 +51,10 @@ class PIDController:
         e = sp - pv
         P = self.Kp * e
 
-        self.errors.append(e)
-        esum = sum(self.errors)
-        I = self.Ki * esum
+        self.error_accumulator += e
+        I = self.Ki * self.error_accumulator
 
-        if len(self.errors) > 1:
-            D = self.Kd * (e - self.errors[-2])
-        else:
-            D = 0
+        D = self.Kd * (e - self.prev_error)
+        self.prev_error = e
 
-        return self.bias + P + I + D
+        return P + I + D

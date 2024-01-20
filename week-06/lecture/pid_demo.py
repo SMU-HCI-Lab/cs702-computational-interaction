@@ -1,5 +1,5 @@
 import pygame
-
+from scipy.stats import norm
 from pid import PController, PIController, PIDController
 
 screen_x = 640
@@ -21,6 +21,7 @@ def main(screen, clock):
     p_control = PController(Kp=0.1)
     pi_control = PIController(Kp=0.1, Ki=0.02)
     pid_control = PIDController(Kp=0.1, Ki=0.02, Kd=0.1)
+    u_min, u_max = -50, 50
 
     while running:
         screen.fill(DARK_GRAY)
@@ -35,8 +36,14 @@ def main(screen, clock):
 
         # Calculate the control signal
         # u = p_control.calc_input(goal_x, obj_x)
-        # u = pi_control.calc_input(goal_x, obj_x)
-        u = pid_control.calc_input(goal_x, obj_x)
+        u = pi_control.calc_input(goal_x, obj_x)
+        # u = pid_control.calc_input(goal_x, obj_x)
+
+        u = max(u_min, min(u_max, u))
+        disturbance = norm.rvs(scale=0.1)
+        u = u + disturbance
+
+
         obj_x += u
 
         # Render the goal
