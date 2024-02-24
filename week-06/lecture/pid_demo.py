@@ -52,7 +52,7 @@ def main(screen, clock):
             WHITE,
             (goal_x, screen_y / 2 - 10),
             (goal_x, screen_y / 2 + 10),
-            1
+            3
         )
 
         # Render the object
@@ -60,7 +60,7 @@ def main(screen, clock):
             screen,
             YELLOW,
             (obj_x, screen_y / 2),
-            5
+            10
         )
 
         t_sum += clock.get_time()
