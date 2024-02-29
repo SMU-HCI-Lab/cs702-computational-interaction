@@ -43,7 +43,7 @@ class PIDController:
     error_accumulator: float = 0
     prev_error: float = 0
 
-    def calc_input(self, sp: float, pv: float) -> float:
+    def calc_input(self, sp: float, pv: float, umin: float, umax: float) -> float:
         """Calculate the control signal.
         sp: Set point
         pv: Process variable
@@ -57,4 +57,10 @@ class PIDController:
         D = self.Kd * (e - self.prev_error)
         self.prev_error = e
 
-        return P + I + D
+        pid = P + I + D
+        if pid < umin:
+            return umin
+        elif pid > umax:
+            return umax
+        else:
+            return pid
