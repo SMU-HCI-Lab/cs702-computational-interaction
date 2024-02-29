@@ -4,25 +4,7 @@ import random
 
 from dataclasses import dataclass
 from pid_controller import PIDController
-
-
-@dataclass
-class Bird:
-    x: float
-    y: float
-    vx: float
-    vy: float
-    w: float = 20
-    h: float = 20
-
-
-@dataclass
-class Pipe:
-    x: float
-    h: float
-    w: float = 70
-    gap: float = 200
-
+from entity import Bird, Pipe, bird_motion, pipe_motion
 
 # Pygame initialization and settings
 pygame.init()
@@ -37,47 +19,25 @@ transform = lambda x, y: (x, SCREEN_HEIGHT - y)
 # Controller
 pid = PIDController(0.8, 0.01, 0.1)
 
-# Bird variables and motion function
-bird = Bird(50, 300, 30, 0)
-x, y = transform(bird.x, bird.y)
-bird_rect = pygame.Rect(x, y, bird.w, bird.h)
-
-
-def bird_motion(bird: Bird, u: float, dt: float, gravity: float = -50) -> Bird:
-    """Updates the bird's y position and velocity."""
-    new_bird = copy.deepcopy(bird)
-    new_bird.y = bird.y + bird.vy * dt
-    new_bird.vy = bird.vy + (u + gravity) * dt
-    return new_bird
-
-
-# Pipe variables and motion function
-pipe_height = random.randint(200, 300)
-pipe = Pipe(SCREEN_WIDTH - 50, pipe_height)
-
-
-def pipe_motion(pipe: Pipe, vx: float, dt: float) -> (Pipe, int):
-    """Updates the pipe"""
-    new_pipe = copy.deepcopy(pipe)
-    new_pipe.x -= vx * dt
-
-    d_score = 0
-    if new_pipe.x < -pipe.w:
-        new_pipe.x = SCREEN_WIDTH
-        new_pipe.h = random.randint(200, 300)
-        d_score = 1
-    return new_pipe, d_score
-
 
 def calculate_the_control_signal(bird: Bird, pipe: Pipe):
     """Calculate the control signal for the bird.
-    You must implement your control logic here!
+    !!!You must implement your control logic here!!!
     """
     sp = pipe.h + pipe.gap / 2
     pv = bird.y + bird.h / 2
     u_jump = pid.calc_input(sp, pv)
     return u_jump
 
+
+# Bird variables and motion function
+bird = Bird(50, 300, 30, 0)
+x, y = transform(bird.x, bird.y)
+bird_rect = pygame.Rect(x, y, bird.w, bird.h)
+
+# Pipe variables and motion function
+pipe_height = random.randint(200, 300)
+pipe = Pipe(SCREEN_WIDTH - 50, pipe_height)
 
 x, h = transform(pipe.x, pipe.h)
 bottom_pipe_rect = pygame.Rect(x, 0, pipe.w, h)
