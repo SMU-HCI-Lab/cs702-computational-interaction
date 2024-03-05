@@ -20,7 +20,7 @@ transform = lambda x, y: (x, SCREEN_HEIGHT - y)
 pid = PIDController(0.8, 0.01, 0.1)
 
 
-def calculate_the_control_signal(bird: Bird, pipe: Pipe):
+def calculate_the_control_signal(bird: Bird, pipe: Pipe, k: int):
     """Calculate the control signal for the bird.
     !!!You must implement your control logic here!!!
     """
@@ -52,6 +52,7 @@ fps = 30
 dt = 1 / fps
 
 score = 0
+k = 0  # Time step
 while running:
     screen.fill(WHITE)
 
@@ -65,7 +66,7 @@ while running:
                 u_jump = 500
 
     # Calculate the control signal
-    u_jump = calculate_the_control_signal(bird, pipe)
+    u_jump = calculate_the_control_signal(bird, pipe, k)
 
     # Bird dynamics
     bird = bird_motion(bird, u_jump, dt)
@@ -102,5 +103,7 @@ while running:
     # Update the display
     pygame.display.update()
     clock.tick(fps)
+
+    k += 1  # Increment time step
 
 pygame.quit()
