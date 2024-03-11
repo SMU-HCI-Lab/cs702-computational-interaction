@@ -6,4 +6,5 @@ numpyro
 pandas
 pygame
 pyomo
+scikit-image
 scipy
