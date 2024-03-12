@@ -1,10 +1,14 @@
 arviz
 jupyter
+librosa
 matplotlib
 numpy
 numpyro
 pandas
+pyaudio
 pygame
 pyomo
+pyqtgraph
+PySide6
 scikit-image
 scipy
