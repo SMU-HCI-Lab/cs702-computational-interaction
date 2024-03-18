@@ -3,12 +3,11 @@ import pyqtgraph as pg
 import pyaudio
 from pyqtgraph.Qt import QtCore, QtWidgets
 
-
 FS = 44100  # Hz
-CHUNKSZ = 1024  # samples
+CHUNK_SIZE = 1024  # samples
 
 
-class MicrophoneRecorder():
+class MicrophoneRecorder:
     def __init__(self, signal):
         self.signal = signal
         self.p = pyaudio.PyAudio()
@@ -16,11 +15,10 @@ class MicrophoneRecorder():
                                   channels=1,
                                   rate=FS,
                                   input=True,
-                                  frames_per_buffer=CHUNKSZ)
+                                  frames_per_buffer=CHUNK_SIZE)
 
     def read(self):
-        data = self.stream.read(CHUNKSZ)
-        # y = np.fromstring(data_fashionmnist, 'int16')
+        data = self.stream.read(CHUNK_SIZE)
         y = np.frombuffer(data, 'int16')
         self.signal.emit(y)
 
@@ -39,7 +37,7 @@ class SpectrogramWidget(pg.PlotWidget):
         self.addItem(self.img)
 
         self.ring_buffer_size = 64
-        self.img_array = np.zeros((self.ring_buffer_size, int(CHUNKSZ / 2) + 1))
+        self.img_array = np.zeros((self.ring_buffer_size, int(CHUNK_SIZE / 2) + 1))
 
         # bipolar colormap
         pos = np.array([0., 1., 0.5, 0.25, 0.75])
@@ -58,12 +56,12 @@ class SpectrogramWidget(pg.PlotWidget):
 
         self.setLabel('left', 'Frequency', units='Hz')
 
-        self.win = np.hanning(CHUNKSZ)
+        self.win = np.hanning(CHUNK_SIZE)
         self.show()
 
     def update(self, chunk):
         # normalized, windowed frequencies in data_fashionmnist chunk
-        spec = np.fft.rfft(chunk * self.win) / CHUNKSZ
+        spec = np.fft.rfft(chunk * self.win) / CHUNK_SIZE
         # get magnitude
         psd = abs(spec)
         # convert to dB scale
@@ -84,7 +82,7 @@ if __name__ == '__main__':
     mic = MicrophoneRecorder(w.read_collected)
 
     # time (seconds) between reads
-    interval = FS / CHUNKSZ
+    interval = FS / CHUNK_SIZE
     t = QtCore.QTimer()
     t.timeout.connect(mic.read)
     t.start(1000 / interval)  # QTimer takes ms
