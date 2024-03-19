@@ -8,7 +8,7 @@ from scipy.fftpack import fft
 
 CHANNELS = 1
 RATE = 44100  # Hz
-CHUNKSZ = 1024  # samples
+CHUNK_SIZE = 1024  # samples
 
 
 class MicrophoneRecorder():
@@ -19,10 +19,10 @@ class MicrophoneRecorder():
                                   channels=CHANNELS,
                                   rate=RATE,
                                   input=True,
-                                  frames_per_buffer=CHUNKSZ)
+                                  frames_per_buffer=CHUNK_SIZE)
 
     def read(self):
-        data = self.stream.read(CHUNKSZ)
+        data = self.stream.read(CHUNK_SIZE)
         y = np.frombuffer(data, 'int16')
         self.signal.emit(y)
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
 
         self.waveform = self.win.addPlot(title='Waveform', row=1, col=1)
         self.waveform.setYRange(0, 255, padding=0)
-        self.waveform.setXRange(0, 2 * CHUNKSZ, padding=0.005)
+        self.waveform.setXRange(0, 2 * CHUNK_SIZE, padding=0.005)
         self.waveform_plot = self.waveform.plot(pen='y', width=3)
 
         self.spectrum = self.win.addPlot(title='Spectrum', row=2, col=1)
@@ -54,16 +54,16 @@ class MainWindow(QMainWindow):
         self.spectrum_plot = self.spectrum.plot(pen='y', width=3)
 
     def draw(self, chunk):
-        x = np.arange(0, 2 * CHUNKSZ, 2)
+        x = np.arange(0, 2 * CHUNK_SIZE, 2)
         y = chunk - np.min(chunk)
         if np.max(y) > 0:
             y = y / np.max(y) * 255
         self.waveform_plot.setData(x, y)
 
-        f = np.linspace(0, RATE / 2, int(CHUNKSZ / 2))
-        window =  np.hanning(CHUNKSZ)
+        f = np.linspace(0, RATE / 2, int(CHUNK_SIZE / 2))
+        window =  np.hanning(CHUNK_SIZE)
         spec = fft(chunk * window)
-        psd = abs(spec)[:int(CHUNKSZ / 2)]
+        psd = abs(spec)[:int(CHUNK_SIZE / 2)]
         self.spectrum_plot.setData(f, psd)
 
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     mic = MicrophoneRecorder(w.read_collected)
     # time (seconds) between reads
-    interval = RATE / CHUNKSZ
+    interval = RATE / CHUNK_SIZE
     t = pg.Qt.QtCore.QTimer()
     t.timeout.connect(mic.read)
     t.start(1000 / interval)  # QTimer takes ms
