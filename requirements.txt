@@ -4,6 +4,7 @@ librosa
 matplotlib
 numpy
 numpyro
+opencv-python
 pandas
 pyaudio
 pygame
