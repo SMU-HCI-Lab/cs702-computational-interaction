@@ -7,13 +7,19 @@
             "USERNAME": "vscode"
         }
     },
-    
+    "forwardPorts": [5000],
+    "appPort": [5000],
+    "runArgs": [
+        "--network=host"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-python.python",
                 "ms-python.vscode-pylance",
-                "ms-toolsai.jupyter"
+                "ms-toolsai.jupyter",
+                "ms-vscode.live-server",
+                "formulahendry.auto-close-tag"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/opt/conda/bin/python",
@@ -33,6 +39,5 @@
     "remoteUser": "vscode",
     "updateRemoteUserUID": true,
     
-    // Configure the default shell
-    "postCreateCommand": "echo 'source ~/.bashrc' >> ~/.profile"
+    "postCreateCommand": "echo 'source ~/.bashrc' >> ~/.profile && pip install flask flask-socketio"
 }
